@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+app.use(express.json());
 
 
 const bebidas = [
@@ -45,3 +46,41 @@ app.get('/bebidas/:id',(req, res) =>
     res.json(bebida);
 }
 );
+
+app.post("/calcular", (req,res) =>
+{
+    const {peso, sexo, horas, bebida} = req.body;
+    if(!peso||!sexo||!horas||!bebida)
+    {
+        return res.status(400).json(
+            {
+                "error":"faltan datos"
+            }
+        );
+    }
+    if(typeof peso != "number" || Number.isNaN(peso)  ||peso<0)
+    {
+        return res.status(400).json(
+            {
+                error: " El peso debe ser un número valido y mayor a 0"
+            }
+        );
+    }
+    if(typeof horas != "number"|| Number.isNaN(horas)|| horas<0)
+    {
+        return res.status(400).json(
+            {
+                error: "Las horas deben ser un número valido y mayor a 0"
+            }
+        );
+    }
+    console.log(peso);
+    console.log(sexo);
+    console.log(horas);
+    console.log(bebida);
+    res.json(
+        {
+            "mensaje": "Datos recibidos"
+        }
+    );
+});
