@@ -36,7 +36,7 @@ app.get('/bebidas/:id',(req, res) =>
 
 app.post("/calcular", (req,res) =>
 {
-    const {peso, sexo, horas, bebida_id} = req.body;
+    const {peso, sexo, horas, bebida_id, cantidad = 1} = req.body;
     if(!peso||!sexo||!horas||!bebida_id)
     {
         return res.status(400).json(
@@ -77,7 +77,7 @@ app.post("/calcular", (req,res) =>
         }
         )
     }
-    const bac = calcularBAC(peso, sexo, horas, bebida.graduacion, bebida.volumen_ml);
+    const bac = calcularBAC(peso, sexo, horas, bebida.graduacion, bebida.volumen_ml, cantidad);
     const vasos = calcularVasosMaximos(peso, sexo, horas, bebida.graduacion, bebida.volumen_ml);
     const bajo_limite_legal = bac <= 0.50;
     res.json({

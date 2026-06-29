@@ -1,4 +1,4 @@
-function calcularBAC(peso, sexo, horas, graduacion, volumen_ml)
+function calcularBAC(peso, sexo, horas, graduacion, volumen_ml, cantidad = 1)
 {
     let r;
     if( sexo==="M")
@@ -9,7 +9,7 @@ function calcularBAC(peso, sexo, horas, graduacion, volumen_ml)
         {
              r= 0.55;
         }
-    const gramos_alcohol = volumen_ml * (graduacion / 100) * 0.789;
+    const gramos_alcohol = volumen_ml * (graduacion / 100) * 0.789 * cantidad;
     const bac_inicial = gramos_alcohol/(peso * r);
     const bac_final = bac_inicial - (0.015 * horas);
     return Math.max(0, bac_final);
