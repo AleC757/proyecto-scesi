@@ -4,6 +4,8 @@ app.use(express.json());
 
 const db = require('./database');
 
+const { calcularBAC, calcularVasosMaximos } = require('./widmark');
+
 app.listen(3000,()=> {
     console.log('Servidor ejecuntadose en puerto 3000');
 });
@@ -26,7 +28,7 @@ app.get('/bebidas/:id',(req, res) =>
         return res.status(404).json({
             error:" bebida no encontrada"
         }
-        )
+        );
     }
     res.json(bebida);
 }
@@ -34,8 +36,8 @@ app.get('/bebidas/:id',(req, res) =>
 
 app.post("/calcular", (req,res) =>
 {
-    const {peso, sexo, horas, bebida} = req.body;
-    if(!peso||!sexo||!horas||!bebida)
+    const {peso, sexo, horas, bebida_id} = req.body;
+    if(!peso||!sexo||!horas||!bebida_id)
     {
         return res.status(400).json(
             {
@@ -59,13 +61,30 @@ app.post("/calcular", (req,res) =>
             }
         );
     }
-    console.log(peso);
-    console.log(sexo);
-    console.log(horas);
-    console.log(bebida);
-    res.json(
-        {
-            "mensaje": "Datos recibidos"
+    if(sexo !== "M" && sexo !== "F" )
+    {
+        return res.status(400).json(
+            {
+                error:"Sexo debe ser M o F."
+            }
+        );
+    }    
+    const bebida = db.prepare('SELECT * FROM bebidas WHERE id = ?').get(bebida_id);
+    if(!bebida)
+    {
+        return res.status(404).json({
+            error:" bebida no encontrada"
         }
-    );
+        )
+    }
+    const bac = calcularBAC(peso, sexo, horas, bebida.graduacion, bebida.volumen_ml);
+    const vasos = calcularVasosMaximos(peso, sexo, horas, bebida.graduacion, bebida.volumen_ml);
+    const bajo_limite_legal = bac <= 0.50;
+    res.json({
+        bebida: bebida.nombre,
+        bac: parseFloat(bac.toFixed(3)),
+        vasos_maximos: vasos,
+        bajo_limite_legal,
+        limite_bolivia: 0.50
+    });
 });
