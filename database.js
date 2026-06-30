@@ -10,6 +10,21 @@ db.exec(`
     )
 `);
 
+db.exec(`
+    CREATE TABLE IF NOT EXISTS historial (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        peso REAL NOT NULL,
+        sexo TEXT NOT NULL,
+        horas REAL NOT NULL,
+        bebida_nombre TEXT NOT NULL,
+        cantidad INTEGER NOT NULL,
+        bac REAL NOT NULL,
+        vasos_maximos INTEGER NOT NULL,
+        bajo_limite_legal INTEGER NOT NULL,
+        fecha TEXT DEFAULT (datetime('now', 'localtime'))
+    )
+`);
+
 const cantidad = db.prepare('SELECT COUNT(*) as total FROM bebidas').get();
 
 if (cantidad.total === 0) {

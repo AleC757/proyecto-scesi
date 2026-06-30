@@ -80,6 +80,12 @@ app.post("/calcular", (req,res) =>
     const bac = calcularBAC(peso, sexo, horas, bebida.graduacion, bebida.volumen_ml, cantidad);
     const vasos = calcularVasosMaximos(peso, sexo, horas, bebida.graduacion, bebida.volumen_ml);
     const bajo_limite_legal = bac <= 0.50;
+
+    db.prepare(`
+        INSERT INTO historial (peso, sexo, horas, bebida_nombre, cantidad, bac, vasos_maximos, bajo_limite_legal)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(peso, sexo, horas, bebida.nombre, cantidad, bac, vasos, bajo_limite_legal ? 1 : 0);
+    
     res.json({
         bebida: bebida.nombre,
         bac: parseFloat(bac.toFixed(3)),
@@ -87,4 +93,14 @@ app.post("/calcular", (req,res) =>
         bajo_limite_legal,
         limite_bolivia: 0.50
     });
+});
+
+app.get("/historial",(req,res) =>
+{
+    const registros = db.prepare(`
+        SELECT * FROM historial
+        ORDER BY fecha DESC
+
+`).all();
+    res.json(registros);
 });
