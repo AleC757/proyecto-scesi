@@ -1,3 +1,5 @@
+require('dotenv').config();
+const { generarConsejo } = require('./llm');
 const express = require('express');
 const app = express();
 app.use(express.json());
@@ -34,8 +36,9 @@ app.get('/bebidas/:id',(req, res) =>
 }
 );
 
-app.post("/calcular", (req,res) =>
+app.post("/calcular", async (req,res) =>
 {
+    try{
     const {peso, sexo, horas, bebida_id, cantidad = 1} = req.body;
     if(!peso||!sexo||!horas||!bebida_id)
     {
@@ -80,6 +83,11 @@ app.post("/calcular", (req,res) =>
     const bac = calcularBAC(peso, sexo, horas, bebida.graduacion, bebida.volumen_ml, cantidad);
     const vasos = calcularVasosMaximos(peso, sexo, horas, bebida.graduacion, bebida.volumen_ml);
     const bajo_limite_legal = bac <= 0.50;
+    const consejo = await generarConsejo({
+            peso, sexo, horas,
+            bebida: bebida.nombre,
+            cantidad, bac, vasos_maximos: vasos
+        });
 
     db.prepare(`
         INSERT INTO historial (peso, sexo, horas, bebida_nombre, cantidad, bac, vasos_maximos, bajo_limite_legal)
@@ -91,8 +99,18 @@ app.post("/calcular", (req,res) =>
         bac: parseFloat(bac.toFixed(3)),
         vasos_maximos: vasos,
         bajo_limite_legal,
-        limite_bolivia: 0.50
+        limite_bolivia: 0.50,
+        consejo
     });
+    } catch (error)
+    {
+        console.error(error);
+        res.status(500).json(
+            {
+                error: "Error interno del servidor"
+            }
+        )
+    }
 });
 
 app.get("/historial",(req,res) =>
