@@ -6,7 +6,7 @@ app.use(express.json());
 
 const db = require('./database');
 
-const { calcularBAC, calcularVasosMaximos } = require('./widmark');
+const { calcularBAC,TiempoEntreTrago, vasos_maximos, SobriedadEnCuanto } = require('./widmark');
 
 app.listen(3000,()=> {
     console.log('Servidor ejecuntadose en puerto 3000');
@@ -39,8 +39,8 @@ app.get('/bebidas/:id',(req, res) =>
 app.post("/calcular", async (req,res) =>
 {
     try{
-    const {peso, sexo, horas, bebida_id, cantidad = 1} = req.body;
-    if(!peso||!sexo||!horas||!bebida_id)
+    const {peso, sexo, comio_antes, horasEvento , vasos_planificados, bebida_id} = req.body;
+    if(!peso||!sexo||!horasEvento||!bebida_id||!comio_antes||!vasos_planificados)
     {
         return res.status(400).json(
             {
@@ -56,7 +56,7 @@ app.post("/calcular", async (req,res) =>
             }
         );
     }
-    if(typeof horas != "number"|| Number.isNaN(horas)|| horas<0)
+    if(typeof horasEvento != "number"|| Number.isNaN(horasEvento)|| horasEvento<0)
     {
         return res.status(400).json(
             {
@@ -80,26 +80,58 @@ app.post("/calcular", async (req,res) =>
         }
         )
     }
-    const bac = calcularBAC(peso, sexo, horas, bebida.graduacion, bebida.volumen_ml, cantidad);
-    const vasos = calcularVasosMaximos(peso, sexo, horas, bebida.graduacion, bebida.volumen_ml);
-    const bajo_limite_legal = bac <= 0.50;
+    if(comio_antes !== "SI" && comio_antes !== "NO" )
+    {
+        return res.status(400).json(
+            {
+                error: "La respuesta de ser SI o NO"
+            }
+        );
+    }
+
+    if(typeof vasos_planificados != "number" || Number.isNaN(vasos_planificados)  ||vasos_planificados<0)
+    {
+        return res.status(400).json({
+            error: "Los vasos planificados deben ser un numero valido y mayor a 0"
+        });
+    }
+    const bacxvaso = calcularBAC(peso, sexo, bebida.graduacion, bebida.volumen_ml, comio_antes);
+    const max_vasos = vasos_maximos(bacxvaso);
+    const ritmo_minutos= TiempoEntreTrago(bacxvaso);
+    const simulacion = SobriedadEnCuanto(vasos_planificados, bacxvaso,horasEvento )
+    const plan_es_seguro = vasos_planificados <= max_vasos;
     const consejo = await generarConsejo({
-            peso, sexo, horas,
-            bebida: bebida.nombre,
-            cantidad, bac, vasos_maximos: vasos
+            peso, sexo, comio_antes, horasEvento,
+            bebida: bebida.nombre, vasos_planificados, max_vasos, ritmo_minutos,
+            bac_final: simulacion.bacFinal,
+            plan_es_seguro
         });
 
+    
+
     db.prepare(`
-        INSERT INTO historial (peso, sexo, horas, bebida_nombre, cantidad, bac, vasos_maximos, bajo_limite_legal)
+        INSERT INTO historial (peso, sexo, comio_antes, horas_evento, bebida_nombre,
+         vasos_planificados, bac_final, plan_es_seguro)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(peso, sexo, horas, bebida.nombre, cantidad, bac, vasos, bajo_limite_legal ? 1 : 0);
+    `).run(peso, sexo, comio_antes, horasEvento, bebida.nombre, vasos_planificados,
+         simulacion.bacFinal, plan_es_seguro ? 1 : 0);
     
     res.json({
         bebida: bebida.nombre,
-        bac: parseFloat(bac.toFixed(3)),
-        vasos_maximos: vasos,
-        bajo_limite_legal,
-        limite_bolivia: 0.50,
+        plan_usuario: {
+                vasos_planificados,
+                plan_es_seguro,
+                vasos_maximos_recomendados: vasos_maximos
+        },
+        estrategia_ritmo: {
+                minutos_entre_vasos: ritmo_minutos,
+                descripcion: `Toma un vaso cada ${ritmo_minutos} minutos para metabolizar correctamente`
+            },
+            simulacion_plan: {
+                bac_estimado_final: simulacion.bacFinal,
+                horas_totales_para_sobriedad: simulacion.horasTotalesParaCero,
+                bajo_limite_legal: simulacion.bacFinal <= 0.50
+            },
         consejo
     });
     } catch (error)
