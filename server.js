@@ -145,6 +145,40 @@ app.post("/calcular", async (req,res) =>
     }
 });
 
+app.post('/tiempo-para-conducir',(req,res) => {
+    const{ bac_actual} = req.body;
+    if(bac_actual === undefined || bac_actual === null)
+    {
+        return res.status(400).json({
+            error : "Falta bac_actual."
+        });
+    }
+    if(bac_actual <0 )
+    {
+        return res.status(400).json(
+            {erro: "El BAC no puede ser negativo."}
+        );
+    }
+    if(bac_actual <= 0.50)
+    {
+        return res.json(
+            {
+                bac_actual,
+                puede_conducir:true,
+                horas_necesarias: 0,
+                mensaje: "Ya estás bajo el limite legal boliviano. Puedes conducir."
+            }
+        );
+    }
+    const horitas = (bac_actual- 0.50)/0.015;
+    res.json({
+        bac_actual,
+        puede_conducir: false,
+        horas_necesarias: Number(horitas.toFixed(2)),
+        mensaje : 'Debes esperar ${horitas} horas antes de condicir legalmente en Bolivia'
+    });
+});
+
 app.get("/historial",(req,res) =>
 {
     const registros = db.prepare(`
