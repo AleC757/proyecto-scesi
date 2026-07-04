@@ -4,7 +4,7 @@ const express = require('express');
 const app = express();
 app.use(express.json());
 
-const db = require('./database');
+const db = require('./src/core/database');
 
 const { calcularBAC,TiempoEntreTrago, vasos_maximos, SobriedadEnCuanto } = require('./widmark');
 
