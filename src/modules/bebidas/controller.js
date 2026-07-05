@@ -1,4 +1,4 @@
-const BebidaService = require('./services.js');
+const BebidaService = require('./services');
 class BebidaController {
     static getAll(req,res)
     {
@@ -13,9 +13,7 @@ class BebidaController {
                 error: 'bebida no encontrada'
             });
         }
-        else{
-            res.json(bebida);
-        }
+        res.json(bebida);
     }
 }
 module.exports= BebidaController;

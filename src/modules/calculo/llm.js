@@ -1,7 +1,7 @@
 const Groq = require('groq-sdk');
 const client = new Groq(
     {
-        apiKey: process.env.GROQ_API_KEY
+        apiKey: require('../../core/config').groqApiKey
     }
 );
 async function generarConsejo(datos)
@@ -25,7 +25,7 @@ async function generarConsejo(datos)
                       Debería esperar ${ritmo_minutos} minutos entre cada vaso.
                       Su BAC estimado al terminar la noche será ${bac_final} g/L.
                       Su plan ${plan_es_seguro ? 'ES seguro' : 'NO ES seguro, excede el límite legal'}.
-                      Da un consejo preventivo breve (máximo 2 oraciones), 
+                      Da un consejo preventivo breve (máximo 1 oraciones), 
                       amigable y con referencia cultural boliviana si es posible.`
             }]
         }

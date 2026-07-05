@@ -1,12 +1,12 @@
-const db = requiere('../../core/database')
+const db = require('../../core/database')
 class BebidaService {
     static getAll()
     {
-        return db.prepare('SELECT FROM * bebidas').all();
+        return db.prepare('SELECT * FROM bebidas').all();
     }
     static getById(id)
     {
-        return db.prepare('SELECT FROM * bebidas WHERE id = ? ').get(id);
+        return db.prepare('SELECT * FROM bebidas WHERE id = ? ').get(id);
     }
 }
 module.exports = BebidaService;
