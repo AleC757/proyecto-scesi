@@ -4,5 +4,5 @@ const router = express.Router();
 router.use('/', require('../modules/calculo/routes'));
 router.use('/bebidas', require('../modules/bebidas/routes'));
 router.use('/historial', require('../modules/historial/routes'));
-
+router.use('/tiempo-para-conducir',require('../modules/conducir/routes'));
 module.exports = router;

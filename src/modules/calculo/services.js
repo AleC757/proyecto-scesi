@@ -43,20 +43,5 @@ class CalculoService {
             consejo
         };
     }
-
-    static tiempoParaConducir(bac_actual) {
-        if (bac_actual <= 0.50) {
-            return {
-                bac_actual, puede_conducir: true, horas_necesarias: 0,
-                mensaje: "Ya estás bajo el límite legal boliviano. Puedes conducir."
-            };
-        }
-        const horitas = (bac_actual - 0.50) / 0.015;
-        return {
-            bac_actual, puede_conducir: false,
-            horas_necesarias: Number(horitas.toFixed(2)),
-            mensaje: `Debes esperar ${horitas.toFixed(2)} horas antes de conducir legalmente en Bolivia`
-        };
-    }
 }
 module.exports = CalculoService;

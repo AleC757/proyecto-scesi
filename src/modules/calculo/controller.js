@@ -21,15 +21,5 @@ class CalculoController {
             });
         }
     }
-
-    static tiempoParaConducir(req, res) {
-        const parsed = TiempoConducirCreate.safeParse(req.body);
-        if (!parsed.success) {
-            return res.status(400).json({ 
-                error: parsed.error.issues[0].message 
-            });
-        }
-        res.json(CalculoService.tiempoParaConducir(parsed.data.bac_actual));
-    }
 }
 module.exports = CalculoController;

@@ -9,8 +9,4 @@ const CalculoCreate = z.object({
     bebida_id: z.number({ message: "faltan datos" }),
 });
 
-const TiempoConducirCreate = z.object({
-    bac_actual: z.number().min(0, "El BAC no puede ser negativo."),
-});
-
 module.exports = { CalculoCreate, TiempoConducirCreate };
