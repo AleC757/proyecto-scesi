@@ -9,4 +9,4 @@ const CalculoCreate = z.object({
     bebida_id: z.number({ message: "faltan datos" }),
 });
 
-module.exports = { CalculoCreate, TiempoConducirCreate };
+module.exports = { CalculoCreate};

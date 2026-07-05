@@ -1,6 +1,6 @@
-const express = requires('express');
-const routes = express.Router();
+const express = require('express');
+const router = express.Router();
 const ConducirController = require('./controller');
 
-Router('/', ConducirController.tiempoParaConducir());
+router.get('/', ConducirController.tiempoParaConducir);
 module.exports = router;
