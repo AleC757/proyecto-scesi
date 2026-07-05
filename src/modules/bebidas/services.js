@@ -6,7 +6,7 @@ class BebidaService {
     }
     static getById(id)
     {
-        return db.prepare('SELECT FOROM * bebidas WHERE id = ? ').get(id);
+        return db.prepare('SELECT FROM * bebidas WHERE id = ? ').get(id);
     }
 }
 module.exports = BebidaService;
