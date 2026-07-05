@@ -1,4 +1,5 @@
 const BebidaService = require('./services');
+const {BebidaCreate, MezclaCreate} = require('./schemas');
 class BebidaController {
     static getAll(req,res)
     {
@@ -14,6 +15,28 @@ class BebidaController {
             });
         }
         res.json(bebida);
+    }
+    static create(req,res)
+    {
+        const parsed = BebidaCreate.safeParse(req.body);
+        if(!parsed.success)
+        {
+            return res.status(400).json({
+                error: parsed.error.issues[0].message
+            });
+        }
+        res.status(201).json(BebidaService.create(parsed.data));
+    }
+    static createMezcla(req,res)
+    {
+        const parsed = MezclaCreate.safeParse(req.body);
+        if(!parsed.success)
+        {
+            return res.status(400).json({
+                error: parsed.error.issues[0].message
+            });
+        }
+        res.status(201).json(BebidaService.createMezcla(parsed.data));
     }
 }
 module.exports= BebidaController;

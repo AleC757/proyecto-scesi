@@ -33,8 +33,8 @@ if (cantidad.total === 0) {
         VALUES (?, ?, ?)
     `);
     insertar.run('Paceña', 4.8, 355);
-    insertar.run('Singani', 40, 50);
-    insertar.run('Fernet', 39, 50);
+    insertar.run('Singani', 40, 750);
+    insertar.run('Fernet', 39, 450);
     insertar.run('Chicha', 5, 300);
     insertar.run('Sucumbé', 15, 100);
     insertar.run('Four Loko', 12, 473);
