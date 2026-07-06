@@ -33,5 +33,22 @@ class BebidaService {
         volumen_ml: volumen_total 
     });
     }
+
+    static update(id, datos) {
+    let fragmentosSQL = [];
+    let valores = [];
+
+    for (const propiedad in datos) {
+        fragmentosSQL.push(propiedad + " = ?");
+        valores.push(datos[propiedad]);
+    }
+
+    const sets = fragmentosSQL.join(', ');
+
+    valores.push(id);
+    db.prepare("UPDATE bebidas SET " + sets + " WHERE id = ?").run(valores);
+
+    return this.getById(id);
+}
 }
 module.exports = BebidaService;
