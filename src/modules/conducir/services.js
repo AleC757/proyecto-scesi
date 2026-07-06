@@ -18,7 +18,7 @@ class ConducirService {
                     mensaje: "Ya estas bajo el limite legal boliviano, ya puedes conducir"
                 };
         }
-        const horitas = Math.ceil(bac_actual/0.015);
+        const horitas = Math.ceil(bac_actual/0.15);
         return{
             bac_actual,
             puede_conducir: false,

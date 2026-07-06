@@ -36,9 +36,10 @@ class CalculoService {
                 descripcion: `Toma un vaso cada ${ritmo_minutos} minutos para metabolizar correctamente`
             },
             simulacion_plan: {
-                bac_estimado_final: simulacion.bacFinal,
-                horas_totales_para_sobriedad: simulacion.horasTotalesParaCero,
-                bajo_limite_legal: simulacion.bacFinal <= 0.50
+                  bac_pico_estimado: Number((vasos_planificados * bacxvaso).toFixed(3)),
+                 bac_estimado_final: simulacion.bacFinal,
+                 horas_totales_para_sobriedad: simulacion.horasTotalesParaCero,
+                     bajo_limite_legal: simulacion.bacFinal <= 0.50
             },
             consejo
         };
