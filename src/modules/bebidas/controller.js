@@ -54,6 +54,18 @@ class BebidaController {
             });
     }
     res.json(BebidaService.update(id, parsed.data));
-}
+    }
+
+    static delete(req, res) {
+
+    const id = parseInt(req.params.id);
+    const bebida = BebidaService.getById(id);
+    if (!bebida) return res.status(404).json({
+         error: "bebida no encontrada" 
+        });
+
+    BebidaService.delete(id);
+    res.status(204).send();
+    }
 }
 module.exports= BebidaController;

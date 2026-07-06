@@ -7,4 +7,6 @@ router.get('/:id', BebidaController.getById);
 router.post('/', BebidaController.create);
 router.post('/mezcla',BebidaController.createMezcla);
 router.patch('/:id', BebidaController.update);
+router.delete('/:id', BebidaController.delete);
+
 module.exports = router;

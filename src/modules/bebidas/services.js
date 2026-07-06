@@ -49,6 +49,15 @@ class BebidaService {
     db.prepare("UPDATE bebidas SET " + sets + " WHERE id = ?").run(valores);
 
     return this.getById(id);
+    }
+
+    static delete(id) {
+    const transaccion = db.transaction((id) => {
+        db.prepare('DELETE FROM bebidas WHERE id = ?').run(id);
+        db.prepare('UPDATE bebidas SET id = id - 1 WHERE id > ?').run(id);
+        db.prepare(`UPDATE sqlite_sequence SET seq = (SELECT MAX(id) FROM bebidas) WHERE name = 'bebidas'`).run();
+    });
+    transaccion(id);
 }
 }
 module.exports = BebidaService;
